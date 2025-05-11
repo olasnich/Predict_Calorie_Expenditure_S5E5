@@ -33,20 +33,30 @@ def load_data(path):
             ("num", StandardScaler(), numerical_features),
 
         ],
+        remainder="passthrough"
 
     ).fit(X_train)
 
     X_train = preprocessor.transform(X_train)
     X_test = preprocessor.transform(X_test)
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, preprocessor
 
 
 if __name__ == "__main__":
     # Load your data
-    X_train, X_test, y_train, y_test = load_data("data/train.csv")
+    X_train, X_test, y_train, y_test, preprocessor = load_data("data/train.csv")
 
     # Run the GPU-accelerated tuning
     best_model, base_models = gpu_accelerated_tuning(
         X_train, y_train, X_test, y_test, gpu_id=0)
 
     joblib.dump(best_model, 'stacking_ensemble_model.pkl')
+
+    #generate submissions
+    X_submission = pd.read("data/test.csv")
+    out=X_submission[["id"]]
+    X_submission = create_features(X_submission.drop(columns=["id"])
+    X_submission = preprocessor.transform(X_submission)
+
+    out["Calories"] = np.exp(best_model.predict(X_submission))
+    out.to_csv("data/submission.csv") 
