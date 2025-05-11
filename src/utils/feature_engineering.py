@@ -29,19 +29,15 @@ def create_features(df):
 
     df['Body_Temp2'] = df['Body_Temp']**2
 
-    X = df.drop(columns=["id", "Calories"])
-
-    y = np.log(df['Calories'])
-
-    numerical_features = [col for col in X.columns if col not in ["Sex"]]
+    numerical_features = [col for col in X.columns if col not in ["Sex","id", "Calories"]]
 
     categorical_features = ["Sex"]
     df['Sex'] = df['Sex'].map({'female': 1, 'male': 0})
 
     for col in categorical_features:
         for num_feature in numerical_features:
-            X[f'{num_feature}_x_{col}'] = X[num_feature] * categorical_features[col]
+            df[f'{num_feature}_x_{col}'] = df[num_feature] * df[col]
 
 
-    return X,y
+    return df
 

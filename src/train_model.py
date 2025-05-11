@@ -14,8 +14,10 @@ import joblib
 def load_data(path):
     # Load your data
     df = pd.read_csv("data/train.csv")
+    df = create_features(df)
 
-    X, y = create_features(df)
+    X = df.drop(columns=["id", "Calories"])
+    y = np.log(df['Calories'])
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
