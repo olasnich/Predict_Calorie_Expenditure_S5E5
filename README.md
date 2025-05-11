@@ -7,5 +7,6 @@ For Kaggle Playground series
 ```markdown
     conda env create -f env.yml
     conda activate myenv
+```
 
 2. Run train_model.py

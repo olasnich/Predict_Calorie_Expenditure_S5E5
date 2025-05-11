@@ -129,8 +129,6 @@ def gpu_accelerated_tuning(X_train, y_train, X_test=None, y_test=None, cv=5, gpu
         'max_depth': randint(5, 30),
         'learning_rate': uniform(0.01, 0.3),
         'n_estimators': randint(500, 3000),
-        'subsample': uniform(0.6, 0.4),
-        'colsample_bytree': uniform(0.6, 0.4),
         'reg_alpha': uniform(0, 1),
         'reg_lambda': uniform(0, 5),
         # GPU-specific parameters
@@ -142,8 +140,6 @@ def gpu_accelerated_tuning(X_train, y_train, X_test=None, y_test=None, cv=5, gpu
         'num_leaves': randint(20, 100),
         'learning_rate': uniform(0.01, 0.3),
         'n_estimators': randint(500, 3000),
-        'subsample': uniform(0.6, 0.4),
-        'colsample_bytree': uniform(0.6, 0.4),
         'reg_alpha': uniform(0, 1),
         'reg_lambda': uniform(0, 1),
         # GPU-specific parameters
