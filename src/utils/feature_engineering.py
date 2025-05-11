@@ -1,5 +1,6 @@
-import pandas as pd 
+import pandas as pd
 import numpy as np
+
 
 def create_features(df):
     # Weight_per_Age
@@ -29,7 +30,8 @@ def create_features(df):
 
     df['Body_Temp2'] = df['Body_Temp']**2
 
-    numerical_features = [col for col in X.columns if col not in ["Sex","id", "Calories"]]
+    numerical_features = [
+        col for col in X.columns if col not in ["Sex", "id", "Calories"]]
 
     categorical_features = ["Sex"]
     df['Sex'] = df['Sex'].map({'female': 1, 'male': 0})
@@ -38,6 +40,4 @@ def create_features(df):
         for num_feature in numerical_features:
             df[f'{num_feature}_x_{col}'] = df[num_feature] * df[col]
 
-
     return df
-
