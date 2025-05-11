@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     # Run the GPU-accelerated tuning
     best_model, base_models = gpu_accelerated_tuning(
-        X_train, y_train, X_test, y_test, gpu_id=0)
+        X_train, y_train.to_numpy(), X_test, y_test.to_numpy(), gpu_id=0)
 
     joblib.dump(best_model, 'stacking_ensemble_model.pkl')
 
