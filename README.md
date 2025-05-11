@@ -4,7 +4,8 @@ For Kaggle Playground series
 
 1. Create conda environment using env.yaml
 
-'''conda env create -f env.yml
-'''conda activate myenv
+```markdown
+    conda env create -f env.yml
+    conda activate myenv
 
 2. Run train_model.py
