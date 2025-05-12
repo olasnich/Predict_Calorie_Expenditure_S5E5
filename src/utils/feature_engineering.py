@@ -31,7 +31,7 @@ def create_features(df):
     df['Body_Temp2'] = df['Body_Temp']**2
 
     numerical_features = [
-        col for col in X.columns if col not in ["Sex", "id", "Calories"]]
+        col for col in df.columns if col not in ["Sex", "id", "Calories"]]
 
     categorical_features = ["Sex"]
     df['Sex'] = df['Sex'].map({'female': 1, 'male': 0})

@@ -12,5 +12,5 @@ For Kaggle Playground series
 2. Run train_model.py or run ensemble_models.ipynb
 
 ```markdown
-    bash train_model.py
+    python train_model.py
 ```
