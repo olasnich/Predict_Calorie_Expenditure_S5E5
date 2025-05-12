@@ -9,7 +9,7 @@ For Kaggle Playground series
     conda activate myenv
 ```
 
-2. Run train_model.py or run ensemble_models.ipynb
+2. Run train_model.py
 
 ```markdown
     python train_model.py
