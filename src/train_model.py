@@ -44,7 +44,8 @@ def load_data(path):
 
 if __name__ == "__main__":
     # Load your data
-    X_train, X_test, y_train, y_test, preprocessor = load_data("data/train.csv")
+    X_train, X_test, y_train, y_test, preprocessor = load_data(
+        "data/train.csv")
 
     # Run the GPU-accelerated tuning
     best_model, base_models = gpu_accelerated_tuning(
@@ -52,11 +53,11 @@ if __name__ == "__main__":
 
     joblib.dump(best_model, 'stacking_ensemble_model.pkl')
 
-    #generate submissions
+    # generate submissions
     X_submission = pd.read_csv("data/test.csv")
-    out=X_submission[["id"]]
+    out = X_submission[["id"]]
     X_submission = create_features(X_submission.drop(columns=["id"]))
     X_submission = preprocessor.transform(X_submission)
 
     out["Calories"] = np.exp(best_model.predict(X_submission))
-    out.to_csv("data/submission.csv") 
+    out.to_csv("data/submission.csv", index=False)
