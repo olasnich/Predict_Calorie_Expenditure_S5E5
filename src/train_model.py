@@ -53,7 +53,7 @@ if __name__ == "__main__":
     joblib.dump(best_model, 'stacking_ensemble_model.pkl')
 
     #generate submissions
-    X_submission = pd.read("data/test.csv")
+    X_submission = pd.read_csv("data/test.csv")
     out=X_submission[["id"]]
     X_submission = create_features(X_submission.drop(columns=["id"]))
     X_submission = preprocessor.transform(X_submission)
