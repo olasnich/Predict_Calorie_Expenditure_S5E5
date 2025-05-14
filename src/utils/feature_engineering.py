@@ -28,14 +28,14 @@ def create_features(df):
     df['BMI'] = df['Weight']/(df['Height'] ** 2)
     df['BMI'] = df['BMI'].round(2)
 
-    df['max_heart_rate'] = 220 - df['Age']
-    df['METs'] = (df['Heart_Rate'] / df['max_heart_rate']) * 8.8
-    df['VO2_max'] = (df['Heart_Rate'] / (df['Age'] + 10)) * 100
-    df['activity_score'] = (df['Duration'] * 2) + \
-        (df['Heart_Rate'] * 3) + (df['Body_Temp'] * 1)
+    #df['max_heart_rate'] = 220 - df['Age']
+    #df['METs'] = (df['Heart_Rate'] / df['max_heart_rate']) * 8.8
+    #df['VO2_max'] = (df['Heart_Rate'] / (df['Age'] + 10)) * 100
+    #df['activity_score'] = (df['Duration'] * 2) + \
+    #    (df['Heart_Rate'] * 3) + (df['Body_Temp'] * 1)
 
     categorical_features = ["Sex"]
     df['Sex'] = df['Sex'].map({'female': 1, 'male': 0})
-    df.drop(columns=['max_heart_rate'])
+    #df.drop(columns=['max_heart_rate'])
     
     return df
