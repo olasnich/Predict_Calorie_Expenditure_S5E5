@@ -103,10 +103,10 @@ def main():
         print(
             "Optuna visualization tools not available. Install with: pip install optuna[visualization]")
 
-    joblib.dump(best_model, 'xgb_model.pkl')
+    joblib.dump(best_model, 'models/xgb_model.pkl')
 
     y_pred = best_model.predict(X_train)
-    y_pred.to_csv('lgb_train_pred.csv', index=False)
+    y_pred.to_csv('data/lgb_train_pred.csv', index=False)
 
     X_submission = pd.read_csv("data/test.csv")
     out = X_submission[["id"]]

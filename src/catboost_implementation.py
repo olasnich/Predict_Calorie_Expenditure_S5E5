@@ -116,12 +116,12 @@ def main():
             "Optuna visualization tools not available. Install with: pip install optuna[visualization]")
 
     # Save model
-    joblib.dump(best_model, 'catboost_model.pkl')
+    joblib.dump(best_model, 'models/catboost_model.pkl')
 
     # Generate predictions
     y_pred = best_model.predict(X_train)
     pd.DataFrame(y_pred, columns=['pred']).to_csv(
-        'catboost_train_pred.csv', index=False)
+        'data/catboost_train_pred.csv', index=False)
 
     # Process test data and create submission
     X_submission = pd.read_csv("data/test.csv")
