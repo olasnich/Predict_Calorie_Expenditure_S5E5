@@ -25,7 +25,6 @@ def objective(trial):
         'border_count': trial.suggest_int('border_count', 32, 255),
         'grow_policy': trial.suggest_categorical('grow_policy', ['SymmetricTree', 'Depthwise', 'Lossguide']),
         'min_data_in_leaf': trial.suggest_int('min_data_in_leaf', 1, 20),
-        'subsample': trial.suggest_float('subsample', 0.5, 1.0),
         'task_type': 'GPU',  # Use GPU if available
         'devices': '0',      # GPU device index
     }
@@ -61,13 +60,13 @@ def load_data(path):
         remainder="passthrough"  # Keep categorical features as is for CatBoost
     ).fit(X)
 
-    X_processed = preprocessor.transform(X)
+    X_train = preprocessor.transform(X)
 
     # Apply polynomial features
     poly = PolynomialFeatures(2, interaction_only=True)
-    X_train = poly.fit_transform(X_processed)
+    #X_train = poly.fit_transform(X_train)
 
-    return X_train, y, X, categorical_features, preprocessor, poly
+    return X_train, y, df, categorical_features, preprocessor, poly
 
 
 def main():
@@ -75,7 +74,7 @@ def main():
     global X_train, y  # Make these available to the objective function
 
     # Load and process data
-    X_train, y, X_original, cat_features, preprocessor, poly = load_data(
+    X_train, y, df, cat_features, preprocessor, poly = load_data(
         "data/train.csv")
 
     # Identify categorical feature indices after polynomial transformation
@@ -120,7 +119,9 @@ def main():
 
     # Generate predictions
     y_pred = best_model.predict(X_train)
-    pd.DataFrame(y_pred, columns=['pred']).to_csv(
+    out = df[['id']]
+    out['calories'] = y_pred
+    out.to_csv(
         'data/catboost_train_pred.csv', index=False)
 
     # Process test data and create submission
@@ -131,11 +132,11 @@ def main():
     X_submission_features = create_features(X_submission.drop(columns=["id"]))
 
     # Apply same transformations as training data
-    X_submission_processed = preprocessor.transform(X_submission_features)
-    X_submission_poly = poly.transform(X_submission_processed)
+    X_submission = preprocessor.transform(X_submission_features)
+    #X_submission = poly.transform(X_submission)
 
     # Predict and convert back from log scale
-    out["Calories"] = np.exp(best_model.predict(X_submission_poly))
+    out["Calories"] = np.exp(best_model.predict(X_submission))
     out.to_csv("data/catboost_submission.csv", index=False)
 
 

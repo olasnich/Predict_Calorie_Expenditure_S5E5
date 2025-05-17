@@ -63,16 +63,16 @@ def load_data(path):
 
     X_train = preprocessor.transform(X)
     poly = PolynomialFeatures(2, interaction_only=True)
-    X_train = poly.fit_transform(X_train)
+    #X_train = poly.fit_transform(X_train)
 
-    return X_train, y, preprocessor, poly
+    return X_train, y, df, preprocessor, poly
 
 
 def main():
     """Main execution function."""
     global X_train, y  # Ensure X_train and y are defined before calling optimization
 
-    X_train, y, preprocessor, poly = load_data(
+    X_train, y, df, preprocessor, poly = load_data(
         "data/train.csv")
 
     study = optuna.create_study(
@@ -107,13 +107,16 @@ def main():
     joblib.dump(best_model, 'models/xgb_model.pkl')
 
     y_pred = best_model.predict(X_train)
-    y_pred.to_csv('data/xgb_train_pred.csv', index=False)
+    out = df[['id']]
+    out['calories'] = y_pred
+    out.to_csv('data/xgb_train_pred.csv', index=False)
 
     X_submission = pd.read_csv("data/test.csv")
     out = X_submission[["id"]]
     X_submission = create_features(X_submission.drop(columns=["id"]))
+    
     X_submission = preprocessor.transform(X_submission)
-    X_submission = poly.transform(X_submission)
+    #X_submission = poly.transform(X_submission)
     out["Calories"] = np.exp(best_model.predict(X_submission))
     out.to_csv("data/xgb_submission.csv", index=False)
 
