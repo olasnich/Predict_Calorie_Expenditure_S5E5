@@ -46,7 +46,7 @@ def load_data(path):
     df = create_features(df)
 
     X = df.drop(columns=["id", "Calories"])
-    y = np.log(df['Calories'])  # Log transform the target
+    y = np.log1p(df['Calories'])  # Log transform the target
 
     # Identify categorical features - in this case just "Sex"
     numerical_features = [col for col in X.columns if col not in ["Sex"]]
@@ -63,10 +63,10 @@ def load_data(path):
     X_train = preprocessor.transform(X)
 
     # Apply polynomial features
-    poly = PolynomialFeatures(2, interaction_only=True)
+    #poly = PolynomialFeatures(2)
     #X_train = poly.fit_transform(X_train)
 
-    return X_train, y, df, categorical_features, preprocessor, poly
+    return X_train, y, df, categorical_features, preprocessor
 
 
 def main():
@@ -74,7 +74,7 @@ def main():
     global X_train, y  # Make these available to the objective function
 
     # Load and process data
-    X_train, y, df, cat_features, preprocessor, poly = load_data(
+    X_train, y, df, cat_features, preprocessor = load_data(
         "data/train.csv")
 
     # Identify categorical feature indices after polynomial transformation
@@ -136,7 +136,7 @@ def main():
     #X_submission = poly.transform(X_submission)
 
     # Predict and convert back from log scale
-    out["Calories"] = np.exp(best_model.predict(X_submission))
+    out["Calories"] = np.clip(np.expm1(best_model.predict(X_submission)), 1, 314)
     out.to_csv("data/catboost_submission.csv", index=False)
 
 

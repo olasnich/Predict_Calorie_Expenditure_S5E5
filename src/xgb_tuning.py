@@ -44,7 +44,7 @@ def load_data(path):
     df = create_features(df)
 
     X = df.drop(columns=["id", "Calories"])
-    y = np.log(df['Calories'])
+    y = np.log1p(df['Calories'])
 
     numerical_features = [col for col in X.columns if col not in ["Sex"]]
     categorical_features = ["Sex"]
@@ -62,17 +62,17 @@ def load_data(path):
     ).fit(X)
 
     X_train = preprocessor.transform(X)
-    poly = PolynomialFeatures(2, interaction_only=True)
+    #poly = PolynomialFeatures(2)
     #X_train = poly.fit_transform(X_train)
 
-    return X_train, y, df, preprocessor, poly
+    return X_train, y, df, preprocessor
 
 
 def main():
     """Main execution function."""
     global X_train, y  # Ensure X_train and y are defined before calling optimization
 
-    X_train, y, df, preprocessor, poly = load_data(
+    X_train, y, df, preprocessor = load_data(
         "data/train.csv")
 
     study = optuna.create_study(
@@ -117,7 +117,7 @@ def main():
     
     X_submission = preprocessor.transform(X_submission)
     #X_submission = poly.transform(X_submission)
-    out["Calories"] = np.exp(best_model.predict(X_submission))
+    out["Calories"] = np.clip(np.expm1(best_model.predict(X_submission)), 1, 314)
     out.to_csv("data/xgb_submission.csv", index=False)
 
 
