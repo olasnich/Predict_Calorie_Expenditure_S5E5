@@ -43,16 +43,13 @@ def objective(trial):
     model = CatBoostRegressor(
         **params, 
         cat_features=['Sex'], 
-        loss_function='RMSE', 
-        eval_metric='RMSE',
-        early_stopping_rounds=100, 
         verbose=False
     )
 
     # Use KFold for optimization as well
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
     scores = cross_val_score(model, X_train, y, cv=kf,
-                             scoring='neg_root_mean_squared_error', n_jobs=1)
+                             scoring='neg_mean_squared_error', n_jobs=1)
 
     return -scores.mean()
 
@@ -117,9 +114,6 @@ def train_kfold_ensemble(X_train_data, y_data, best_params):
             devices='0',
             verbose=False,
             cat_features=['Sex'],
-            loss_function='RMSE', 
-            eval_metric='RMSE',
-            early_stopping_rounds=100,
             random_seed=RANDOM_STATE + fold,  # Different seed for each fold
             **best_params
         )

@@ -36,12 +36,12 @@ def objective(trial):
         'random_state': RANDOM_STATE
     }
 
-    model = XGBRegressor(**params, eval_metric="rmse", enable_categorical=True)
+    model = XGBRegressor(**params, enable_categorical=True)
 
     # Use KFold for optimization as well
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
     scores = cross_val_score(model, X_train, y, cv=kf,
-                             scoring='neg_root_mean_squared_error', n_jobs=1)
+                             scoring='neg_mean_squared_error', n_jobs=1)
 
     return -scores.mean()
 
@@ -67,6 +67,12 @@ def load_data(path):
 
     X_train = preprocessor.transform(X)
 
+    transformed_columns = numerical_features + ['Sex']
+    X_train = pd.DataFrame(X_train, columns=transformed_columns)
+    
+    # Ensure Sex column is categorical
+    X_train['Sex'] = X_train['Sex'].astype('category')
+
     return X_train, y, df, preprocessor
 
 
@@ -81,15 +87,16 @@ def train_kfold_ensemble(X_train, y, best_params):
     for fold, (train_idx, val_idx) in enumerate(kf.split(X_train)):
         print(f"Training fold {fold + 1}/{N_SPLITS}")
 
-        X_fold_train, X_fold_val = X_train[train_idx], X_train[val_idx]
-        y_fold_train, y_fold_val = y.iloc[train_idx], y.iloc[val_idx]
+        X_fold_train = X_train.iloc[train_idx]
+        X_fold_val = X_train.iloc[val_idx]
+        y_fold_train = y.iloc[train_idx]
+        y_fold_val = y.iloc[val_idx]
 
         # Create model with best parameters
         model = XGBRegressor(
             tree_method='gpu_hist',
             gpu_id=0,
             predictor='gpu_predictor',
-            eval_metric="rmse",
             enable_categorical=True,
             random_state=RANDOM_STATE + fold,  # Different seed for each fold
             **best_params
@@ -182,12 +189,24 @@ def main():
 
     # Generate test predictions using ensemble
     print("Generating test predictions...")
-    X_submission = pd.read_csv("data/test.csv")
-    submission_ids = X_submission[["id"]].copy()
-    X_submission = create_features(X_submission.drop(columns=["id"]))
-    X_submission = preprocessor.transform(X_submission)
+    test_df = pd.read_csv("data/test.csv")
+    submission_ids = test_df[["id"]].copy()
 
-    test_predictions = make_ensemble_predictions(models, X_submission)
+    # Apply same feature engineering to test data
+    X_test_features = create_features(test_df.drop(columns=["id"]))
+    X_test_features['Sex'] = X_test_features['Sex'].map({1: 'female', 0: 'male'})
+    X_test_features['Sex'] = X_test_features['Sex'].astype('category')
+
+    # Apply same transformations as training data
+    X_test_transformed = preprocessor.transform(X_test_features)
+    
+    # Create DataFrame with same column structure as training
+    numerical_features = [col for col in X_test_features.columns if col not in ["Sex"]]
+    transformed_columns = numerical_features + ['Sex']
+    X_test = pd.DataFrame(X_test_transformed, columns=transformed_columns)
+    X_test['Sex'] = X_test['Sex'].astype('category')
+
+    test_predictions = make_ensemble_predictions(models, X_test)
     submission_ids["Calories"] = np.clip(np.expm1(test_predictions), 1, 314)
     submission_ids.to_csv("data/xgb_submission.csv", index=False)
 
