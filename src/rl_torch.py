@@ -24,9 +24,9 @@ else:
 
 def load_data():
     # Load model predictions
-    cat = pd.read_csv('data/catboost_train_pred.csv')
-    xgb = pd.read_csv('data/xgb_train_pred.csv')
-    lgb = pd.read_csv('data/lgb_train_pred.csv')
+    cat = pd.read_csv('data/new3/catboost_train_pred.csv')
+    xgb = pd.read_csv('data/new3/xgb_train_pred.csv')
+    lgb = pd.read_csv('data/xgb_train_pred.csv')
 
     # Load original features and target
     train_data = pd.read_csv('data/train.csv')
@@ -313,9 +313,9 @@ def generate_predictions_with_full_pipeline():
 
     print("\nGenerating test predictions...")
     # Load test data
-    cat_test = pd.read_csv('data/catboost_submission.csv')
-    xgb_test = pd.read_csv('data/xgb_submission.csv')
-    lgb_test = pd.read_csv('data/lgb_submission.csv')
+    cat_test = pd.read_csv('data/new3/catboost_submission.csv')
+    xgb_test = pd.read_csv('data/new3/xgb_submission.csv')
+    lgb_test = pd.read_csv('data/xgb_submission.csv')
     test_features = pd.read_csv('data/test.csv')
     test_features = create_features(test_features)
 
